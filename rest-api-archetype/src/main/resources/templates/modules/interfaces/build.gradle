@@ -1,0 +1,29 @@
+plugins {
+	id 'org.springframework.boot'
+}
+
+description = "@formattedProjectNameSpace@ Interfaces"
+	
+dependencies {
+	implementation project(':common')
+	implementation project(':service')
+	implementation project(':dto')
+
+	implementation "org.springframework.boot:spring-boot-starter-actuator"
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	implementation "io.springfox:springfox-swagger2:${swagger2Version}"
+	implementation "io.springfox:springfox-swagger-ui:${swaggerUIVersion}"
+	
+	implementation 'org.codehaus.janino:janino'
+
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+}
+
+bootJar {
+   	archiveFileName = "app-${archiveBaseName.get()}.${archiveExtension.get()}"
+}
+
+bootRun {
+    systemProperties System.properties
+}

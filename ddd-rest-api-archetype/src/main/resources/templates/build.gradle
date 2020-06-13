@@ -1,0 +1,76 @@
+plugins {
+    id 'org.springframework.boot' version "2.2.7.RELEASE" apply false 
+	id 'java'
+    id 'eclipse'
+}
+
+ext {
+	projVersion = '@version@'
+    springCloudVersion = 'Hoxton.SR4'
+	springBootVersion = '2.2.7.RELEASE'
+
+    swagger2Version = '2.9.2'
+    swaggerUIVersion = '2.9.2'
+
+    mapstructVersion = '1.3.1.Final'
+
+	testNGVersion = '7.1.0'
+	h2Version = '1.4.200'
+}
+
+configure(rootProject) {
+	description = "@formattedProjectNameSpace@ Module"
+}
+
+configure(allprojects) { project ->
+	group = '@group@'
+	version = "${projVersion}"
+	
+	apply plugin: 'java'
+	
+	sourceCompatibility = '11'
+	
+	repositories {
+		mavenCentral()
+	}
+}
+
+configure(subprojects) { subproject ->
+
+    apply plugin: 'io.spring.dependency-management'
+
+	dependencyManagement {
+		imports {
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+			mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+		}
+	}
+
+	dependencies {
+        implementation 'org.slf4j:slf4j-api'
+		implementation 'org.springframework.boot:spring-boot-starter-actuator'
+		implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+
+		runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+		
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testImplementation "org.testng:testng:${testNGVersion}"
+		testImplementation "com.h2database:h2:${h2Version}"
+	}
+	
+	test {
+		useTestNG() { 
+			useDefaultListeners = true
+		}
+    	testLogging.showStandardStreams = true
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.cloud:spring-cloud-starter'
+	implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}

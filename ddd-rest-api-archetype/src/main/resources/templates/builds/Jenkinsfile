@@ -1,0 +1,17 @@
+node {
+    def app
+
+    stage('Clone repository') {
+        /* Check out source code repository */
+
+    }
+
+    stage('Build image') {
+        /* Build docker image */
+
+    }
+
+    stage('Push image') {
+        /* Push image to the remote repository */
+    }
+}

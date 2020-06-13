@@ -1,0 +1,8 @@
+rootProject.name = '@artifactId@'
+include   ':application', ':domain', ':dto', ':infrastructure', ':interfaces'
+
+project(':application').projectDir = new File(settingsDir, '/modules/application')
+project(':domain').projectDir = new File(settingsDir, '/modules/domain')
+project(':dto').projectDir = new File(settingsDir, '/modules/dto')
+project(':infrastructure').projectDir = new File(settingsDir, '/modules/infrastructure')
+project(':interfaces').projectDir = new File(settingsDir, '/modules/interfaces')

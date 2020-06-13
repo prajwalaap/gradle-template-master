@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+	
+	<springProperty name="app.logging.directory" source="app.logging.directory" defaultValue="./logs"/>
+	<springProperty name="app.logging.level" source="app.logging.level" defaultValue="debug" />
+	<springProperty name="app.logging.console.enable" source="app.logging.console.enable" defaultValue="true" />
+	<springProperty name="springframework.logging.level" source="logging.level.springframework" defaultValue="INFO" />
+	<springProperty scope="context" name="spring.app.name" source="spring.application.name" defaultValue="@artifactId@"/>
+	
+	<property name="FILE_LOGGING_PATTERN" value="%d{dd MMM HH:mm:ss:SSS} [%t] %p %c{2}.%M - [${spring.app.name}, %X{X-B3-TraceId:-}, %X{X-B3-SpanId:-}, %X{X-Span-Export:-}] - %msg%n" />
+    
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>${FILE_LOGGING_PATTERN}</Pattern>
+		</layout>
+	</appender>
+	
+	<appender name="accessLog" class="ch.qos.logback.core.FileAppender">
+        <file>${app.logging.directory}/access_log.log</file>
+        <encoder>
+            <pattern>%d{dd MMM HH:mm:ss:SSS} [%t] %p %c{2}.%M - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+	<appender name="async" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="accessLog" />
+    </appender>
+
+	<appender name="APP_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${app.logging.directory}/${spring.app.name}.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>${FILE_LOGGING_PATTERN}</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<FileNamePattern>${app.logging.directory}/${spring.app.name}%i.log</FileNamePattern>
+			<MinIndex>1</MinIndex>
+			<MaxIndex>20</MaxIndex>
+		</rollingPolicy>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>5MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+    
+    <appender name="FRAMEWORK_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.logging.directory}/framework.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>${FILE_LOGGING_PATTERN}</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <FileNamePattern>${app.logging.directory}/framework%i.log</FileNamePattern>
+            <MinIndex>1</MinIndex>
+            <MaxIndex>20</MaxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>5MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+	<appender name="ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${app.logging.directory}/error.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>${FILE_LOGGING_PATTERN}</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<FileNamePattern>${app.logging.directory}/error%i.log</FileNamePattern>
+			<MinIndex>1</MinIndex>
+			<MaxIndex>20</MaxIndex>
+		</rollingPolicy>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>5MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+
+    <logger name="@packageName@" level="${app.logging.level}" additivity="false">
+		<appender-ref ref="APP_LOG" />
+		<if condition='property("app.logging.console.enable").equals("true")'>
+			<then>
+				<appender-ref ref="STDOUT" />
+			</then>
+		</if>
+	</logger>
+    <logger name="org.springframework" level="${springframework.logging.level}" additivity="false">
+        <appender-ref ref="FRAMEWORK_LOG" />
+       <if condition='property("app.logging.console.enable").equals("true")'>
+			<then>
+				<appender-ref ref="STDOUT" />
+			</then>
+		</if>
+    </logger>
+	<logger name="reactor.netty.http.server.AccessLog" level="INFO" additivity="false">
+        <appender-ref ref="async"/>
+    </logger>
+	
+
+	<root level="warn">
+		<appender-ref ref="APP_LOG" />
+		<if condition='property("app.logging.console.enable").equals("true")'>
+			<then>
+				<appender-ref ref="STDOUT" />
+			</then>
+		</if>
+	</root>
+
+</configuration>

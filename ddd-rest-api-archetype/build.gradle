@@ -1,0 +1,14 @@
+plugins {
+  id "com.orctom.archetype" version "1.4.8"
+}
+
+generate {
+    bindingProcessor = { bindings ->
+        bindings.formattedProjectName = bindings['projectName'].replaceAll( "(\\-)([A-Za-z0-9])", 
+                { Object[] value -> value[2].toUpperCase() } ).capitalize()
+        bindings.formattedProjectNameSpace = bindings['projectName'].replaceAll( "(\\-)([A-Za-z0-9])", 
+                { Object[] value -> " " + value[2].toUpperCase() } ).capitalize()    
+
+        bindings['packagePath'] = bindings['packageName'].replaceAll("\\.","/")
+    }
+}

@@ -1,0 +1,14 @@
+description = "@artifactId@ Repository"
+	
+dependencies {
+
+    implementation project(':common')
+	implementation project(':service')
+	implementation project(':dto')
+    
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	implementation 'org.postgresql:postgresql'
+}
+
+
